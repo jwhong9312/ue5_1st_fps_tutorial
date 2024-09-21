@@ -7,6 +7,7 @@ DerivedDataCache/*
 Intermediate/*
 .vsconfig
 .sln
+.vscode/*
 
 # Compiled Object files
 *.slo
