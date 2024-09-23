@@ -41,7 +41,9 @@ public:
 	void StopJump();
 
 	// FPS camera.
-
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* FPSCameraComponent;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = Mesh)
+	USkeletalMeshComponent* FPSMesh;
 };
