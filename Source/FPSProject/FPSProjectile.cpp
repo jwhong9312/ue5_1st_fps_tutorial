@@ -15,6 +15,9 @@ AFPSProjectile::AFPSProjectile()
     {
         // Use a sphere as a simple collision representation.
         CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
+        // Set the sphere's collision profile name to "Projectile".
+        CollisionComponent->BodyInstance.SetCollisionProfileName(TEXT("Projectile"));
+
         // Set the sphere's collision radius.
         CollisionComponent->InitSphereRadius(15.0f);
         // Set the root component to be the collision component.
@@ -35,23 +38,26 @@ AFPSProjectile::AFPSProjectile()
     }
 
     if (!ProjectileMeshComponent)
+    {
+        ProjectileMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMeshComponent"));
+        static ConstructorHelpers::FObjectFinder<UStaticMesh>Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Sphere.Sphere'"));
+        if (Mesh.Succeeded())
         {
-            ProjectileMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ProjectileMeshComponent"));
-            static ConstructorHelpers::FObjectFinder<UStaticMesh>Mesh(TEXT("/Script/Engine.StaticMesh'/Game/Sphere.Sphere'"));
-            if (Mesh.Succeeded())
-            {
-                ProjectileMeshComponent->SetStaticMesh(Mesh.Object);
-            }
-     
-            static ConstructorHelpers::FObjectFinder<UMaterial>Material(TEXT("/Script/Engine.Material'/Game/SphereMaterial.SphereMaterial'"));
-            if (Material.Succeeded())
-            {
-                ProjectileMaterialInstance = UMaterialInstanceDynamic::Create(Material.Object, ProjectileMeshComponent);
-            }
-            ProjectileMeshComponent->SetMaterial(0, ProjectileMaterialInstance);
-            ProjectileMeshComponent->SetRelativeScale3D(FVector(0.09f, 0.09f, 0.09f));
-            ProjectileMeshComponent->SetupAttachment(RootComponent);
+            ProjectileMeshComponent->SetStaticMesh(Mesh.Object);
         }
+     
+        static ConstructorHelpers::FObjectFinder<UMaterial>Material(TEXT("/Script/Engine.Material'/Game/SphereMaterial.SphereMaterial'"));
+        if (Material.Succeeded())
+        {
+            ProjectileMaterialInstance = UMaterialInstanceDynamic::Create(Material.Object, ProjectileMeshComponent);
+        }
+        ProjectileMeshComponent->SetMaterial(0, ProjectileMaterialInstance);
+        ProjectileMeshComponent->SetRelativeScale3D(FVector(0.09f, 0.09f, 0.09f));
+        ProjectileMeshComponent->SetupAttachment(RootComponent);
+    }
+
+    // Delete the projectile after 3 seconds.
+    InitialLifeSpan = 3.0f;
 }
 
 // Called when the game starts or when spawned
